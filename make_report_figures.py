@@ -19,7 +19,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
-ROOT = Path("/Users/sarafarmahinifarahani/Downloads/single_Cell/Project1")
+ROOT = Path(__file__).resolve().parent
 RUN = ROOT / "data/geneformer/tier2/run_mono_covid"
 COMP = RUN / "comparison"
 COMP.mkdir(parents=True, exist_ok=True)

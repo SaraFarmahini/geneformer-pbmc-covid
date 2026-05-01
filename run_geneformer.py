@@ -35,7 +35,7 @@ import pandas as pd
 import scanpy as sc
 import torch
 
-ROOT = Path("/Users/sarafarmahinifarahani/Downloads/single_Cell/Project1")
+ROOT = Path(__file__).resolve().parent
 H5AD_INPUT = ROOT / "data/geneformer/build/combined.ensembl.h5ad"
 H5AD_INPUT_DIR = ROOT / "data/geneformer/build"  # tokenizer reads from a directory
 

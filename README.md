@@ -78,17 +78,21 @@ What's **not** in the repo (regenerable; see `.gitignore`):
 
 ## Reproducing the analysis
 
-Prerequisites: ~10 GB free disk, ~9 GB RAM, conda.
+Prerequisites: ~10 GB free disk, ~9 GB RAM, conda. Scripts resolve their own paths via `Path(__file__).resolve().parent`, so they run unmodified from any clone location — no editing required.
 
 ```bash
+git clone https://github.com/SaraFarmahini/geneformer-pbmc-covid.git
+cd geneformer-pbmc-covid
+
 conda env create -f environment.yml
 conda activate single-cell
 
-# Place the 4 .rds files from GEO GSE150728 at:
-# data/project_1/final_data/{HIP043,S556,S557,S558}_*.rds
+# 1) Place the 4 .rds files from GEO GSE150728 at:
+#    data/project_1/final_data/{HIP043,S556,S557,S558}_*.rds
 
-# Clone Geneformer V1/30M:
+# 2) Clone Geneformer at the pinned commit (see "Pinned versions" below):
 git clone https://huggingface.co/ctheodoris/Geneformer
+( cd Geneformer && git checkout ad8f66d )   # the V1/30M revision used in this repo
 
 # Phase 1-2 (R + Python)
 Rscript inspect_rds.R
@@ -116,7 +120,19 @@ python make_final_effect_figure.py
 python make_feature_importance_figure.py
 ```
 
-> **Note on paths.** Each Python script defines `ROOT = Path("/Users/sarafarmahinifarahani/Downloads/single_Cell/Project1")` near the top. Edit this to your local clone before running.
+### Pinned versions
+
+For bit-for-bit reproducibility, pin the upstream artifacts:
+
+| Component | Version / pin | Notes |
+| --- | --- | --- |
+| Geneformer model | V1, 30M parameters (`Geneformer-V1-30M`) | 6 transformer layers, 256-dim hidden state |
+| Geneformer code | commit [`ad8f66d`](https://huggingface.co/ctheodoris/Geneformer/commit/ad8f66dfcda3ebbd148d916c01f31339c5b95a15) of [`ctheodoris/Geneformer`](https://huggingface.co/ctheodoris/Geneformer) on Hugging Face | Pretrained weights ship in the same repo |
+| Gene dictionary | `gene_dictionaries_30m/gene_name_id_dict_gc30M.pkl` (bundled with Geneformer) | Used by `build_anndata.py` for symbol → Ensembl mapping |
+| CellTypist models | `Immune_All_High.pkl` (32 labels) and `Immune_All_Low.pkl` (98 labels) | Auto-downloaded by `annotate_celltypes.py` (Domínguez Conde et al. 2022) |
+| Source dataset | GEO `GSE150728` (Wilk et al. 2020) | 4 PBMC samples used: `HIP043`, `S556`, `S557`, `S558` |
+
+If you need a different Geneformer commit, replace `ad8f66d` above with the commit you want and edit `Geneformer/` accordingly.
 
 ---
 

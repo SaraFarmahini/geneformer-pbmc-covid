@@ -24,7 +24,7 @@ import numpy as np
 import pandas as pd
 import scanpy as sc
 
-ROOT = Path("/Users/sarafarmahinifarahani/Downloads/single_Cell/Project1")
+ROOT = Path(__file__).resolve().parent
 BUILD_DIR = ROOT / "data/geneformer/build"
 FIG_DIR = ROOT / "data/geneformer/figures"
 COMBINED_H5AD = BUILD_DIR / "combined.ensembl.h5ad"

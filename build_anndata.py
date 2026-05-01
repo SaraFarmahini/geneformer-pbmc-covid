@@ -24,7 +24,7 @@ import scanpy as sc
 import scipy.io as sio
 import scipy.sparse as sp
 
-ROOT = Path("/Users/sarafarmahinifarahani/Downloads/single_Cell/Project1")
+ROOT = Path(__file__).resolve().parent
 RAW_DIR = ROOT / "data/geneformer/raw"
 BUILD_DIR = ROOT / "data/geneformer/build"
 BUILD_DIR.mkdir(parents=True, exist_ok=True)

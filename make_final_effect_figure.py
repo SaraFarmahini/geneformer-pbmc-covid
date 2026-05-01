@@ -23,7 +23,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-ROOT = Path("/Users/sarafarmahinifarahani/Downloads/single_Cell/Project1")
+ROOT = Path(__file__).resolve().parent
 COMP = ROOT / "data/geneformer/tier2/run_mono_covid/comparison"
 CSV = COMP / "per_cell_predictions.csv"
 JSON = COMP / "comparison.json"

@@ -31,7 +31,7 @@ import numpy as np
 import pandas as pd
 from datasets import load_from_disk
 
-ROOT = Path("/Users/sarafarmahinifarahani/Downloads/single_Cell/Project1")
+ROOT = Path(__file__).resolve().parent
 TOK_PATH = ROOT / "data/geneformer/tokenized/pbmc.dataset"
 EMB_PATH = ROOT / "data/geneformer/build/embedded_annotated.h5ad"
 OUT_DIR = ROOT / "data/geneformer/tier2"

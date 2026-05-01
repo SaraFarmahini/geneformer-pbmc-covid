@@ -37,7 +37,7 @@ from sklearn.metrics import (
     roc_curve,
 )
 
-ROOT = Path("/Users/sarafarmahinifarahani/Downloads/single_Cell/Project1")
+ROOT = Path(__file__).resolve().parent
 RUN_DIR = ROOT / "data/geneformer/tier2/run_mono_covid"
 PREP_DIR = RUN_DIR / "prepared"
 EVAL_DIR = RUN_DIR / "eval"

@@ -18,7 +18,7 @@ warnings.filterwarnings("ignore")
 import pandas as pd
 from datasets import load_from_disk
 
-ROOT = Path("/Users/sarafarmahinifarahani/Downloads/single_Cell/Project1")
+ROOT = Path(__file__).resolve().parent
 TOK_DATASET = ROOT / "data/geneformer/tokenized/pbmc.dataset"
 CHUNKS_DIR  = ROOT / "data/geneformer/tokenized/chunks"
 EMB_OUT_DIR = ROOT / "data/geneformer/embeddings"

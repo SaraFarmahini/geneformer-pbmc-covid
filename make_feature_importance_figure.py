@@ -27,7 +27,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-ROOT = Path("/Users/sarafarmahinifarahani/Downloads/single_Cell/Project1")
+ROOT = Path(__file__).resolve().parent
 RUN = ROOT / "data/geneformer/tier2/run_mono_covid"
 CSV = RUN / "baseline" / "baseline_feature_importance.csv"
 OUT = RUN / "comparison" / "feature_importance.png"

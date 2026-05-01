@@ -31,7 +31,7 @@ warnings.filterwarnings("ignore")
 import numpy as np
 import pandas as pd
 
-ROOT = Path("/Users/sarafarmahinifarahani/Downloads/single_Cell/Project1")
+ROOT = Path(__file__).resolve().parent
 TIER2_DIR = ROOT / "data/geneformer/tier2"
 # Truncated to top-1024 ranked tokens per cell; sequences > 1024 cause MPS to
 # scale pathologically (78s/step at seq=2048 vs 467ms/step at seq=1024).
