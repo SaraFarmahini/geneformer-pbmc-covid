@@ -1,0 +1,5 @@
+"sample_id","file_basename","geo_id","manuscript_id","condition","tissue","study"
+"S556","GSM4557329_GSM4557329_556_cell.counts.matrices.rds","GSM4557329","C2","COVID-19","PBMC","Wilk et al. 2020 (GSE150728)"
+"S557","GSM4557330_GSM4557330_557_cell.counts.matrices.rds","GSM4557330","C3","COVID-19","PBMC","Wilk et al. 2020 (GSE150728)"
+"S558","GSM4557331_GSM4557331_558_cell.counts.matrices.rds","GSM4557331","C4","COVID-19","PBMC","Wilk et al. 2020 (GSE150728)"
+"HIP043","GSM4557337_GSM4557337_HIP043_cell.counts.matrices.rds","GSM4557337","H4","Healthy","PBMC","Wilk et al. 2020 (GSE150728)"

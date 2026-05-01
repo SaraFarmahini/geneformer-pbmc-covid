@@ -1,0 +1,5 @@
+"sample_id","manuscript_id","condition","cells","genes","median_umi","median_genes","median_mt_pct"
+"S556","C2","COVID-19",7465,31401,380,237,5.5
+"S557","C3","COVID-19",16536,33852,774,460,4.54
+"S558","C4","COVID-19",21215,33454,376,219,6.33
+"HIP043","H4","Healthy",12578,33635,846,532,6.52

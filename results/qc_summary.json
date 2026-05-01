@@ -1,0 +1,62 @@
+{
+  "S556": {
+    "sample_id": "S556",
+    "geo_id": "GSM4557329",
+    "manuscript_id": "C2",
+    "condition": "COVID-19",
+    "cells": 7465,
+    "genes": 31401,
+    "median_umi": 380,
+    "median_genes": 237,
+    "median_mt_pct": 5.5,
+    "q25_umi": 190,
+    "q75_umi": 987,
+    "q25_genes": 130,
+    "q75_genes": 571
+  },
+  "S557": {
+    "sample_id": "S557",
+    "geo_id": "GSM4557330",
+    "manuscript_id": "C3",
+    "condition": "COVID-19",
+    "cells": 16536,
+    "genes": 33852,
+    "median_umi": 774,
+    "median_genes": 460,
+    "median_mt_pct": 4.54,
+    "q25_umi": 179,
+    "q75_umi": 1817,
+    "q25_genes": 129,
+    "q75_genes": 969
+  },
+  "S558": {
+    "sample_id": "S558",
+    "geo_id": "GSM4557331",
+    "manuscript_id": "C4",
+    "condition": "COVID-19",
+    "cells": 21215,
+    "genes": 33454,
+    "median_umi": 376,
+    "median_genes": 219,
+    "median_mt_pct": 6.33,
+    "q25_umi": 221,
+    "q75_umi": 752,
+    "q25_genes": 138,
+    "q75_genes": 418
+  },
+  "HIP043": {
+    "sample_id": "HIP043",
+    "geo_id": "GSM4557337",
+    "manuscript_id": "H4",
+    "condition": "Healthy",
+    "cells": 12578,
+    "genes": 33635,
+    "median_umi": 846,
+    "median_genes": 532,
+    "median_mt_pct": 6.52,
+    "q25_umi": 179,
+    "q75_umi": 1632,
+    "q25_genes": 141,
+    "q75_genes": 907
+  }
+}

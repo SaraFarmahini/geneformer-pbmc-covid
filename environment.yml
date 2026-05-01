@@ -1,0 +1,20 @@
+name: single-cell
+channels: 
+  - bioconda
+  - paul.martin-2
+  - conda-forge 
+  - bu_cnio 
+  - r 
+dependencies: 
+  - r-base=4.0.5
+  - r-seurat=4.0.1 
+  - r-enrichr
+  - r-remotes
+  - r-biocmanager
+  - r-tidyverse
+  - r-ggplot2
+  - bioconductor-celldex
+  - r-devtools
+  - bioconductor-complexheatmap
+  - r-ggpubr
+  - r-matrix=1.3.2

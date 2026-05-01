@@ -1,0 +1,30 @@
+{
+  "test_acc": 0.9759036144578314,
+  "test_macro_f1": 0.9501335113484646,
+  "test_auc_covid": 0.9949265687583446,
+  "confusion_matrix": [
+    [
+      32,
+      3
+    ],
+    [
+      3,
+      211
+    ]
+  ],
+  "id_class_dict": {
+    "0": "Healthy",
+    "1": "COVID-19"
+  },
+  "n_train": 2239,
+  "n_test": 249,
+  "train_class_counts": {
+    "0": 321,
+    "1": 1918
+  },
+  "test_class_counts": {
+    "0": 35,
+    "1": 214
+  },
+  "n_features": 2000
+}
