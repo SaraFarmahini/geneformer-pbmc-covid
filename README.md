@@ -21,23 +21,11 @@ Sample identity, GEO GSM accessions, RDS filenames, and disease labels live in *
 - Healthy donors included: **`HIP043`**, **`HIP044`**, **`HIP045`** (`GSM4557337`, `GSM4557338`, `GSM4557339`)
 - Severe COVID donors: **`S556`**, **`S557`**, **`S558`**
 
-RDS files belong in **`data/project_1/final_data/`** (Git-ignored binaries). Optionally override path with conda env vars later; for now filenames are authoritative.
+RDS files belong in **`data/project_1/final_data/`** (Git-ignored binaries).
 
-Snakemake installs separately (kept out of `environment.yml` strict R pins to avoid solver churn):
+**Snakemake:** install and run as in [Reproducing the analysis](#reproducing-the-analysis) (below), e.g. `conda install -c conda-forge -c bioconda snakemake` then `snakemake -c 1`.
 
-```bash
-conda activate single-cell
-conda install -c conda-forge -c bioconda "snakemake>=7.32"
-```
-
-Then run from the repo root (`Snakefile`):
-
-```bash
-snakemake -c 1 -n    # dry-run
-snakemake -c 1       # week1 → qc_summary → MatrixMarket export
-```
-
-Then continue with **`python build_anndata.py`** and downstream Geneformer steps as before.
+Then run **`python build_anndata.py`** and the rest of the Python pipeline.
 
 ---
 
@@ -109,47 +97,79 @@ What's **not** in the repo (regenerable; see `.gitignore`):
 
 Prerequisites: ~10 GB free disk, ~9 GB RAM, conda. Scripts resolve their own paths via `Path(__file__).resolve().parent`, so they run unmodified from any clone location — no editing required.
 
+Create or update the conda env (this file now includes **Python 3.10 + AnnData/Scanpy**, not just R):
+
 ```bash
 git clone https://github.com/SaraFarmahini/geneformer-pbmc-covid.git
 cd geneformer-pbmc-covid
 
 conda env create -f environment.yml
 conda activate single-cell
+```
 
-# 1) Place all six GEO .rds files from GSE150728 at:
-#    data/project_1/final_data/*.rds  (exact basenames listed in config/samples.tsv)
+If you **already** had an older `single-cell` env (R-only YAML), run:
 
-# 2) Clone Geneformer at the pinned commit (see "Pinned versions" below):
+```bash
+conda activate single-cell
+conda env update -n single-cell -f environment.yml
+```
+
+Install **Snakemake** separately (kept out of the YAML to reduce solver conflicts with pinned R):
+
+```bash
+conda activate single-cell
+conda install -c conda-forge -c bioconda snakemake
+```
+
+Full pipeline (after placing the six `.rds` files under `data/project_1/final_data/`):
+
+```bash
+# 1) GEO matrices (see config/samples.tsv for exact filenames)
+
+# 2) Geneformer codebase
 git clone https://huggingface.co/ctheodoris/Geneformer
-( cd Geneformer && git checkout ad8f66d )   # the V1/30M revision used in this repo
+( cd Geneformer && git checkout ad8f66d )
 
-# Phase 1-2 (Snakemake OR manual R)
+# 3) Phase 1–2 — Snakemake or manual R
 snakemake -c 1
-# Equivalent manual calls:
-#   Rscript week1.R
-#   Rscript qc_summary.R
-#   Rscript export_for_geneformer.R
+# or: Rscript week1.R && Rscript qc_summary.R && Rscript export_for_geneformer.R
 
 python build_anndata.py
 
-# Phase 3 (Tier 1 — Geneformer zero-shot)
+# 4) Tier 1 — Geneformer
 python run_geneformer.py
 python embed_chunked.py
 
-# Phase 4 (Cell-type annotation)
+# 5) Cell-type annotation
 python annotate_celltypes.py
 
-# Phase 5 (Tier 2 — fine-tuning + baseline)
+# 6) Tier 2 + figures
 python build_mono_dataset.py
 python _truncate_dataset.py
 python finetune_mono_classifier.py
 python compare_baseline_vs_geneformer.py
-
-# Figures
 python make_report_figures.py
 python make_final_effect_figure.py
 python make_feature_importance_figure.py
 ```
+
+---
+
+## Environment troubleshooting
+
+**`CondaValueError: invalid package specification: #`**  
+Conda treated `#` as a package name. That usually means a bad copy-paste (`conda install #`, or a line that was split so `#` became its own token). Run `conda install …` with only real package names; keep comments on separate lines.
+
+**`ModuleNotFoundError: No module named 'anndata'`**  
+Refresh the env after pulling the updated `environment.yml` (`conda env update …` above), then verify:
+
+```bash
+which python
+python -c "import anndata; print(anndata.__version__)"
+```
+
+**`snakemake: command not found`**  
+Install Snakemake in the activated env, or use `python -m snakemake -c 1 -n`.
 
 ### Pinned versions
 
@@ -161,7 +181,7 @@ For bit-for-bit reproducibility, pin the upstream artifacts:
 | Geneformer code | commit [`ad8f66d`](https://huggingface.co/ctheodoris/Geneformer/commit/ad8f66dfcda3ebbd148d916c01f31339c5b95a15) of [`ctheodoris/Geneformer`](https://huggingface.co/ctheodoris/Geneformer) on Hugging Face | Pretrained weights ship in the same repo |
 | Gene dictionary | `gene_dictionaries_30m/gene_name_id_dict_gc30M.pkl` (bundled with Geneformer) | Used by `build_anndata.py` for symbol → Ensembl mapping |
 | CellTypist models | `Immune_All_High.pkl` (32 labels) and `Immune_All_Low.pkl` (98 labels) | Auto-downloaded by `annotate_celltypes.py` (Domínguez Conde et al. 2022) |
-| Source dataset | GEO `GSE150728` (Wilk et al. 2020) | 4 PBMC samples used: `HIP043`, `S556`, `S557`, `S558` |
+| Source dataset | GEO `GSE150728` (Wilk et al. 2020) | Six donors in `config/samples.tsv`: COVID `S556`–`S558`, Healthy `HIP043`–`HIP045` |
 
 If you need a different Geneformer commit, replace `ad8f66d` above with the commit you want and edit `Geneformer/` accordingly.
 
@@ -169,9 +189,9 @@ If you need a different Geneformer commit, replace `ad8f66d` above with the comm
 
 ## Caveats
 
-- **n = 1 healthy donor.** Every COVID-vs-healthy contrast in this project is partially confounded with `HIP043` vs the other three donors. Cell-type-level findings (NK depletion, plasmablast expansion, monocyte dysregulation) match the published Wilk et al. observations, which provides external validation, but a fully rigorous test of disease-specific effects requires more healthy donors.
-- **Geneformer ≈ logistic regression on this task.** The +0.8% accuracy gap is within bootstrap noise on 35 minority-class test cells. The honest framing is *"Geneformer is competitive with the dedicated classical pipeline, with no preprocessing required"*, not *"Geneformer is better"*.
-- **Fine-tuning interpretability is via proxy.** Feature attributions shown here come from the logistic-regression baseline. The 96.4% per-cell agreement between the two models lets it serve as an interpretable proxy for what the transformer is using; direct attribution from the Geneformer checkpoint would require attention or input-occlusion analysis.
+- **Historical report numbers use 4 donors.** `REPORT.md` figures and Tier-2 metrics describe the original `HIP043` + three COVID cohort. The repo now supports **six donors** via `config/samples.tsv` (3 healthy, 3 COVID); rerun the pipeline to regenerate embeddings, clusters, and stratified splits — do not mix old Leiden IDs (`c5`/`c13`) with the new merged object without reassignment.
+- **Geneformer ≈ logistic regression on this task.** The +0.8% accuracy gap is within bootstrap noise on 35 minority-class test cells in the *original* Tier-2 split. The honest framing is *"Geneformer is competitive with the dedicated classical pipeline, with no preprocessing required"*, not *"Geneformer is better"*.
+- **Fine-tuning interpretability is via proxy.** Feature attributions shown come from the logistic-regression baseline. The 96.4% per-cell agreement between the two models lets it serve as an interpretable proxy for what the transformer is using; direct attribution from the Geneformer checkpoint would require attention or input-occlusion analysis.
 
 ---
 

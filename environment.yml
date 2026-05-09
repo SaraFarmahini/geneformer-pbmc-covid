@@ -1,13 +1,44 @@
+# R (Seurat) + Python (AnnData / Scanpy) + Snakemake — project pipeline
+#
+# CREATE (first time):
+#   conda env create -f environment.yml
+# UPDATE existing env named `single-cell`:
+#   conda env update -n single-cell -f environment.yml
+#
+# Install Snakemake in the same env (separate command — avoids conda conflicts with R pins):
+#   conda activate single-cell
+#   conda install -c conda-forge -c bioconda snakemake
+#
+# IMPORTANT: do not type a bare "#" as a package argument; that causes
+#   CondaValueError: invalid package specification: #
+#
+# Geneformer/CUDA: use pip or a second env if needed (see README).
+
 name: single-cell
-channels: 
+
+channels:
+  - conda-forge
   - bioconda
   - paul.martin-2
-  - conda-forge 
-  - bu_cnio 
-  - r 
-dependencies: 
+  - bu_cnio
+  - r
+
+dependencies:
+  # --- Python backbone (build_anndata.py, scanpy helpers; install before running Python steps)
+  # Snakemake is NOT listed here — its dependency tree often conflicts with pinned R 4.0.5.
+  # Install after the env works: see README "Environment troubleshooting".
+  - python=3.10
+  - pip
+  - numpy
+  - scipy
+  - pandas
+  - anndata>=0.9
+  - scanpy>=1.9
+  - h5py
+
+  # --- R / Seurat (Phase 1)
   - r-base=4.0.5
-  - r-seurat=4.0.1 
+  - r-seurat=4.0.1
   - r-enrichr
   - r-remotes
   - r-biocmanager
