@@ -5,12 +5,39 @@ A two-tier Geneformer pipeline for severe-COVID-19 PBMC analysis — from raw `.
 | | |
 | --- | --- |
 | **Course** | Single Cell Bioinformatics 2025-26 — Project 1 |
-| **Dataset** | Wilk et al. 2020, [GEO `GSE150728`](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE150728) — 4 PBMC samples (3 COVID-19, 1 healthy) |
+| **Dataset** | Wilk et al. 2020, [GEO `GSE150728`](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE150728) — **six** PBMC donors (3 severe COVID-19, **3 healthy** including HIP044 & HIP045) |
 | **Model** | [Geneformer V1 / 30M](https://huggingface.co/ctheodoris/Geneformer) (Theodoris et al., *Nature* 2023) |
-| **Cells analysed** | 28,036 (28k after QC, of 57,794 raw barcodes) |
+| **Cells analysed (published run)** | 28,036 after QC on the original 4-donor subset (`REPORT.md`); re-analysis with six donors recomputes larger totals |
 | **Compute** | Apple-Silicon laptop (MPS for embedding, CPU for fine-tuning) |
 
 For the full technical write-up — methods, parameters, all results, and discussion — see [`REPORT.md`](REPORT.md).
+
+---
+
+## Cohort metadata (fixes the Healthy `n=1` bottleneck)
+
+Sample identity, GEO GSM accessions, RDS filenames, and disease labels live in **`config/samples.tsv`** — parsed by **`week1.R`**, **`export_for_geneformer.R`**, and the root **`Snakefile`**.
+
+- Healthy donors included: **`HIP043`**, **`HIP044`**, **`HIP045`** (`GSM4557337`, `GSM4557338`, `GSM4557339`)
+- Severe COVID donors: **`S556`**, **`S557`**, **`S558`**
+
+RDS files belong in **`data/project_1/final_data/`** (Git-ignored binaries). Optionally override path with conda env vars later; for now filenames are authoritative.
+
+Snakemake installs separately (kept out of `environment.yml` strict R pins to avoid solver churn):
+
+```bash
+conda activate single-cell
+conda install -c conda-forge -c bioconda "snakemake>=7.32"
+```
+
+Then run from the repo root (`Snakefile`):
+
+```bash
+snakemake -c 1 -n    # dry-run
+snakemake -c 1       # week1 → qc_summary → MatrixMarket export
+```
+
+Then continue with **`python build_anndata.py`** and downstream Geneformer steps as before.
 
 ---
 
@@ -59,7 +86,9 @@ Training curve for Tier 2:
 
 | Path | Contents |
 | --- | --- |
-| `*.py`, `*.R` (root) | Pipeline scripts. Kept flat to match hardcoded paths inside the scripts. |
+| `config/samples.tsv`, `config/config.yaml` | Machine-readable cohort (donor ⇄ GEO ⇄ RDS path) consumed by Snakemake |
+| `Snakefile` | Phase-0 preprocessing DAG (inputs → Week-1 artefacts → mtx export) |
+| `*.py`, `*.R` (root) | Pipeline scripts. Kept flat; each Python script derives `ROOT` from its own filename. |
 | `data/geneformer/figures/` | Tier 1 UMAPs (13 PNGs) |
 | `data/geneformer/tier2/run_mono_covid/comparison/` | Tier 2 evaluation plots (training curve, confusion matrices, ROC, per-cell agreement, per-sample errors, headline metrics, final-effect strip plot, feature-importance bars) |
 | `data/geneformer/tier2/run_mono_covid/{baseline,eval,comparison}/` | Per-cell predictions, headline metrics, feature importances (CSV / JSON only — model checkpoints excluded) |
@@ -87,18 +116,20 @@ cd geneformer-pbmc-covid
 conda env create -f environment.yml
 conda activate single-cell
 
-# 1) Place the 4 .rds files from GEO GSE150728 at:
-#    data/project_1/final_data/{HIP043,S556,S557,S558}_*.rds
+# 1) Place all six GEO .rds files from GSE150728 at:
+#    data/project_1/final_data/*.rds  (exact basenames listed in config/samples.tsv)
 
 # 2) Clone Geneformer at the pinned commit (see "Pinned versions" below):
 git clone https://huggingface.co/ctheodoris/Geneformer
 ( cd Geneformer && git checkout ad8f66d )   # the V1/30M revision used in this repo
 
-# Phase 1-2 (R + Python)
-Rscript inspect_rds.R
-Rscript week1.R
-Rscript qc_summary.R
-Rscript export_for_geneformer.R
+# Phase 1-2 (Snakemake OR manual R)
+snakemake -c 1
+# Equivalent manual calls:
+#   Rscript week1.R
+#   Rscript qc_summary.R
+#   Rscript export_for_geneformer.R
+
 python build_anndata.py
 
 # Phase 3 (Tier 1 — Geneformer zero-shot)

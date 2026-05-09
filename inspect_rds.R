@@ -1,7 +1,7 @@
 ###############################################################################
 ## Quick inspector for the project's per-sample .rds files.
 ## Usage:
-##   Rscript inspect_rds.R                     # inspects all 4 files briefly
+##   Rscript inspect_rds.R                     # briefly inspect all .rds files under data/project_1/final_data
 ##   Rscript inspect_rds.R <path/to/file.rds>  # inspects one file in detail
 ###############################################################################
 suppressPackageStartupMessages(library(Matrix))

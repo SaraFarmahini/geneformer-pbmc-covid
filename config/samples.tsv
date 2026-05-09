@@ -1,0 +1,15 @@
+# Wilk et al. 2020 — GSE150728 PBMCs (PBMC RNA-seq matrices from dropEst, $exon used downstream)
+# Canonical files live under data/project_1/final_data/ (see Snakefile validate_inputs rule).
+#
+# Columns are read by week1.R, export_for_geneformer.R, and Snakefile (repo root).
+#
+# manuscript_id: table / manuscript identifiers from Wilk Table 1 (C2,C3,C4,H4).
+# HIP044 / HIP045: additional healthy donors (GEO GSM4557338/39). Manuscript IDs are
+# set to HIP044/HIP045 here for traceability—replace with authoritative Table S labels if yours differ.
+sample_id	file_basename	geo_id	manuscript_id	condition	tissue	study
+S556	GSM4557329_GSM4557329_556_cell.counts.matrices.rds	GSM4557329	C2	COVID-19	PBMC	Wilk et al. 2020 (GSE150728)
+S557	GSM4557330_GSM4557330_557_cell.counts.matrices.rds	GSM4557330	C3	COVID-19	PBMC	Wilk et al. 2020 (GSE150728)
+S558	GSM4557331_GSM4557331_558_cell.counts.matrices.rds	GSM4557331	C4	COVID-19	PBMC	Wilk et al. 2020 (GSE150728)
+HIP043	GSM4557337_GSM4557337_HIP043_cell.counts.matrices.rds	GSM4557337	H4	Healthy	PBMC	Wilk et al. 2020 (GSE150728)
+HIP044	GSM4557338_HIP044_cell.counts.matrices.rds	GSM4557338	HIP044	Healthy	PBMC	Wilk et al. 2020 (GSE150728)
+HIP045	GSM4557339_HIP045_cell.counts.matrices.rds	GSM4557339	HIP045	Healthy	PBMC	Wilk et al. 2020 (GSE150728)

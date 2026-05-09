@@ -1,0 +1,8 @@
+# Snakemake config — paired with workflow/Snakefile
+project_root: ""
+
+# Canonical location for GEO dropEst .rds extractions (not committed — user copies here)
+input_rds_dir: "data/project_1/final_data"
+
+# Same file read by week1.R / export_for_geneformer.R
+samples_tsv: "config/samples.tsv"

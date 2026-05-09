@@ -1,14 +1,16 @@
 """
-Build a single AnnData from the 4 mtx-exported PBMC samples.
+Build a single AnnData from mtx-exported PBMC samples (each subdir of
+data/geneformer/raw/ is one donor).
 
 Stages:
   1. Read each sample's mtx + features + barcodes.
   2. Outer-join genes across samples (zero-fill missing).
-  3. Filter cells: n_genes >= 200, n_counts >= 500.
+  3. Attach per-cell metadata from obs.csv (all columns).
   4. Compute mitochondrial percentage (informational; not used by Geneformer).
-  5. Map gene symbols -> Ensembl IDs via Geneformer's bundled gc30M dictionary.
-  6. Drop genes with no Ensembl ID match.
-  7. Save as data/geneformer/build/combined.ensembl.h5ad
+  5. Filter cells: n_genes >= 200, n_counts >= 500.
+  6. Map gene symbols -> Ensembl IDs via Geneformer's bundled gc30M dictionary.
+  7. Drop genes with no Ensembl ID match.
+  8. Save as data/geneformer/build/combined.ensembl.h5ad
 """
 
 from __future__ import annotations
@@ -51,7 +53,7 @@ def load_one_sample(sample_dir: Path) -> ad.AnnData:
 
 
 def main() -> int:
-    print("=== Stage 1: load 4 samples ===", flush=True)
+    print("=== Stage 1: load samples from data/geneformer/raw/*/ ===", flush=True)
     sample_dirs = sorted([p for p in RAW_DIR.iterdir() if p.is_dir()])
     if not sample_dirs:
         print("ERROR: no sample subdirs in", RAW_DIR, file=sys.stderr)
@@ -66,10 +68,10 @@ def main() -> int:
     combined.X = sp.csr_matrix(combined.X)
     print(f"  combined: {combined.n_obs:,} cells x {combined.n_vars:,} genes")
 
-    print("\n=== Stage 3: attach per-cell metadata ===", flush=True)
+    print("\n=== Stage 3: attach per-cell metadata (obs.csv) ===", flush=True)
     obs_csv = pd.read_csv(RAW_DIR / "obs.csv").set_index("barcode")
     obs_csv = obs_csv.loc[combined.obs_names]
-    for col in ("sample_id", "manuscript_id", "condition", "n_counts", "n_genes"):
+    for col in obs_csv.columns:
         combined.obs[col] = obs_csv[col].values
 
     print("\n=== Stage 4: compute %MT ===", flush=True)
@@ -114,7 +116,7 @@ def main() -> int:
 
     print(f"\n  final shape: {combined.n_obs:,} cells x {combined.n_vars:,} genes (Ensembl IDs)")
 
-    print("\n=== Stage 7: write h5ad ===", flush=True)
+    print("\n=== Stage 8: write h5ad ===", flush=True)
     out_path = BUILD_DIR / "combined.ensembl.h5ad"
     combined.write_h5ad(out_path, compression="gzip")
     size_mb = out_path.stat().st_size / 1e6
